@@ -178,32 +178,44 @@
     <script src="shared-db.js?v=9"></script>
     <script src="script.js?v=9"></script>
     <script>
-        // Hapus badge "Powered by Netlify" yang disisipkan otomatis di level edge
+        // Babat badge HUD "Powered by Netlify" (cuma muncul untuk akun team yang login).
+        // Netlify menyisipkan <script src="/.netlify/scripts/hud"> (path RELATIF, tanpa
+        // "netlify.com") yang lalu me-render pill di pojok kanan bawah. Versi lama
+        // pembasmi ini lolos karena cuma mencocokkan "netlify.com".
         (function() {
-            var style = document.createElement('style');
-            style.textContent = 'a[href*="netlify.com"], div:has(> a[href*="netlify.com"]), iframe[src*="netlify.com"] { display: none !important; }';
-            document.head.appendChild(style);
+            var css = document.createElement('style');
+            css.textContent = 'script[src*="netlify"],iframe[src*="netlify"],link[href*="netlify"]{display:none!important;}';
+            document.head.appendChild(css);
 
-            var cari = function() {
-                document.querySelectorAll('a, div, span, iframe').forEach(function(el) {
-                    var t = (el.textContent || '').trim();
-                    var h = el.getAttribute && el.getAttribute('href') || '';
-                    var s = el.getAttribute && el.getAttribute('src') || '';
-                    if (t === 'Powered by Netlify' || h.indexOf('netlify.com') !== -1 || s.indexOf('netlify.com') !== -1) {
-                        if (el.children.length === 0 || t.indexOf('Netlify') !== -1) el.remove();
-                    }
+            function badUrl(u) {
+                u = String(u || '');
+                return u.indexOf('netlify') !== -1 || u.indexOf('/.netlify') !== -1;
+            }
+            // Naik max 2 level dari teks badge untuk mencabut pill container-nya.
+            function killPill(leaf) {
+                var pill = leaf, up = 0;
+                while (pill.parentElement && up < 2) {
+                    var pt = (pill.parentElement.textContent || '').trim();
+                    if (pt === 'Powered by Netlify') { pill = pill.parentElement; up++; }
+                    else break;
+                }
+                pill.remove();
+            }
+            function sweep() {
+                document.querySelectorAll('script[src], iframe[src], link[href]').forEach(function(el) {
+                    var u = el.getAttribute('src') || el.getAttribute('href') || '';
+                    if (badUrl(u)) el.remove();
                 });
-            };
+                document.querySelectorAll('a, button, span, div').forEach(function(el) {
+                    if ((el.textContent || '').trim() === 'Powered by Netlify') killPill(el);
+                });
+            }
 
-            cari();
-            setTimeout(cari, 300);
-            setTimeout(cari, 800);
-            setTimeout(cari, 1500);
-            setTimeout(cari, 3000);
-            document.addEventListener('DOMContentLoaded', cari);
-
-            var obs = new MutationObserver(function() { cari(); });
-            obs.observe(document.documentElement, { childList: true, subtree: true });
+            sweep();
+            [300, 800, 1500, 3000, 6000].forEach(function(ms) { setTimeout(sweep, ms); });
+            document.addEventListener('DOMContentLoaded', sweep);
+            new MutationObserver(function() { sweep(); })
+                .observe(document.documentElement, { childList: true, subtree: true });
         })();
     </script>
 </body>
