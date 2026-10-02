@@ -443,13 +443,25 @@ button[title^="Hapus"]:active {
        bukan dipipihkan sampai kolom Aksi terpotong/hilang. */
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    /* Scrollbar disamain sama tema (dulu putih tebal bawaan browser). */
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) transparent;
 }
+.glass-table::-webkit-scrollbar { height: 8px; }
+.glass-table::-webkit-scrollbar-track { background: transparent; }
+.glass-table::-webkit-scrollbar-thumb {
+    background: linear-gradient(90deg, var(--primary), #6366f1);
+    border-radius: 99px;
+    border: 2px solid var(--bg-card);
+}
+.glass-table::-webkit-scrollbar-thumb:hover { background: var(--primary-soft); }
 table { width: 100%; border-collapse: collapse; }
 th, td {
     padding: 0.85rem 1.15rem;
     text-align: left;
     border-bottom: 1px solid var(--border);
     font-size: 0.85rem;
+    vertical-align: middle;
 }
 th {
     color: var(--text-muted);
@@ -459,6 +471,8 @@ th {
     letter-spacing: 1px;
     background: var(--bg-elevated);
     font-family: var(--font-display);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-hover);
 }
 tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--bg-elevated); }
@@ -1305,7 +1319,9 @@ footer {
     position: sticky;
     right: 0;
     z-index: 2;
-    background: var(--bg-card);
+    /* Solid + sedikit elevated biar nempel jelas di atas konten scroll
+       dan nggak belang pas row di-hover. */
+    background: var(--bg-elevated);
     box-shadow: -8px 0 12px -8px rgba(0, 0, 0, 0.55);
 }
 .th-act { z-index: 3; }
@@ -1365,15 +1381,20 @@ td.cell-price {
 }
 
 /* Tier list in table */
-.tier-cell { display: flex; flex-direction: column; gap: 0.2rem; }
+.tier-cell { display: flex; flex-direction: column; gap: 0.3rem; }
 .tier-cell-row {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     gap: 1rem;
     font-size: 0.78rem;
     color: var(--text-muted);
     min-width: 170px;
+    line-height: 1.5;
+    padding: 0.1rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
 }
+.tier-cell-row:last-child { border-bottom: none; }
 .tier-cell-row b { color: var(--text); font-weight: 500; white-space: nowrap; }
 .tier-cell-foot {
     margin-top: 0.45rem;
