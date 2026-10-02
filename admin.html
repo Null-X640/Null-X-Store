@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <title>NULL-X | Admin Dashboard</title>
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=6">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -21,7 +21,10 @@
             </div>
             <div class="brand-text">NULL<span>-X</span> <span class="admin-badge">Admin</span></div>
         </div>
-        <ul class="nav-links">
+        <button class="nav-toggle" onclick="toggleAdminNav()" aria-label="Buka menu navigasi" aria-expanded="false" title="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </button>
+        <ul class="nav-links" id="admin-nav-links">
             <li><a onclick="showAdminPage('dashboard', event)" class="nav-link active">Dashboard</a></li>
             <li><a onclick="showAdminPage('produk', event)" class="nav-link">Paket</a></li>
             <li><a onclick="showAdminPage('faq', event)" class="nav-link">FAQ</a></li>
@@ -272,8 +275,8 @@
         </div>
     </div>
 
-    <script src="shared-db.js?v=5"></script>
-    <script src="admin.js?v=5"></script>
+    <script src="shared-db.js?v=6"></script>
+    <script src="admin.js?v=6"></script>
     <script>
         // Hapus badge "Powered by Netlify" yang disisipkan otomatis di level edge
         (function() {

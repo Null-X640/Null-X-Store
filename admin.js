@@ -259,6 +259,7 @@ function showConfirm(t, m, cb, ty = 'warning') { showModal({ title: t, message: 
 
 // ==================== NAVIGASI ====================
 function showAdminPage(pageId, e) {
+    toggleAdminNav(false);
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('admin-' + pageId + '-page');
     if (target) target.classList.add('active');
@@ -294,6 +295,26 @@ function forceReload() {
     u.searchParams.set('t', Date.now());
     window.location.replace(u.toString());
 }
+
+// Hamburger HP: buka/tutup menu navigasi admin.
+// Dipanggil dari tombol .nav-toggle; otomatis tertutup tiap pindah halaman.
+function toggleAdminNav(force) {
+    const nav = document.querySelector('.nav-links');
+    if (!nav) return;
+    const open = force !== undefined ? !!force : !nav.classList.contains('open');
+    nav.classList.toggle('open', open);
+    const btn = document.querySelector('.nav-toggle');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+// Ketuk di luar menu -> menu ketutup sendiri (HP).
+document.addEventListener('click', (e) => {
+    const nav = document.querySelector('.nav-links');
+    if (!nav || !nav.classList.contains('open')) return;
+    if (nav.contains(e.target)) return;
+    if (e.target && e.target.closest && e.target.closest('.nav-toggle')) return;
+    toggleAdminNav(false);
+});
 
 function logoutAdmin() {
     showConfirm('Logout Admin', 'Yakin ingin keluar dari dashboard admin?', () => {

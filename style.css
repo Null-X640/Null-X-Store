@@ -130,6 +130,26 @@ button { font-family: inherit; }
 .nav-link:hover { color: var(--text); }
 .nav-link.active { color: var(--text); }
 
+.nav-actions { display: flex; align-items: center; gap: 0.6rem; }
+
+/* Hamburger khusus admin ( + halaman lain kalau butuh ).
+   Disembunyikan di desktop, muncul di HP sebagai pengganti .nav-links. */
+.nav-toggle {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 0.5rem 0.6rem;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.nav-toggle:hover { background: var(--bg-hover); border-color: var(--border-hover); }
+.nav-toggle[aria-expanded="true"] { border-color: var(--primary); color: var(--primary-soft); }
+
 /* ==================== BUTTONS ==================== */
 .btn-glow {
     background: var(--primary);
@@ -1688,7 +1708,41 @@ td.cell-price {
     .glass-table table { min-width: 560px; }
     .glass-table th, .glass-table td { padding: 0.7rem 0.75rem; }
     .navbar { padding: 0.85rem 1.25rem; }
+    /* HP: nav-links jadi dropdown di bawah navbar, dibuka via hamburger.
+       (Dulu display:none tanpa pengganti -> menu admin raib di HP.) */
+    .nav-toggle { display: inline-flex; }
     .nav-links { display: none; }
+    .nav-links.open {
+        display: flex;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        gap: 0;
+        background: rgba(0, 0, 0, 0.94);
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+        padding: 0.5rem 1.25rem 1rem;
+        z-index: 99;
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+    .nav-links.open li { width: 100%; }
+    .nav-links.open .nav-link {
+        display: block;
+        padding: 0.75rem 0.25rem;
+        font-size: 0.9rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .nav-links.open li:last-child .nav-link { border-bottom: none; }
+    .nav-links.open .nav-link.active { color: var(--primary-soft); }
+    /* Navbar HP dipadatkan: stamp disembunyikan, tombol jadi ikon saja */
+    .nav-actions { gap: 0.4rem; }
+    .nav-actions .ver-stamp { display: none; }
+    .nav-actions .btn-outline { padding: 0.5rem 0.6rem; font-size: 0; gap: 0; }
     .hero { padding: 3rem 1.25rem 2.5rem; }
     .hero h1 { font-size: 2.1rem; letter-spacing: -1px; }
     .section-title { font-size: 1.6rem; }
