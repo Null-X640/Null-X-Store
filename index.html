@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="assets/favicon.png">
     <link rel="apple-touch-icon" href="assets/favicon.png">
     <title>NULL-X Store</title>
-    <link rel="stylesheet" href="style.css?v=6">
+    <link rel="stylesheet" href="style.css?v=7">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -22,10 +22,14 @@
             </div>
             <div class="brand-text">NULL<span>-X</span></div>
         </div>
+        <button class="nav-toggle" onclick="toggleUserNav()" aria-label="Buka menu navigasi" aria-expanded="false" title="Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        </button>
         <ul class="nav-links" id="nav-links">
             <li><a onclick="showPage('home')" class="nav-link active">Produk</a></li>
             <li><a onclick="showPage('faq')" class="nav-link">FAQ</a></li>
             <li><a onclick="showPage('transaksi')" class="nav-link">Transaksi</a></li>
+            <li><a onclick="showPage('download')" class="nav-link">Download</a></li>
         </ul>
         <div class="nav-actions">
             <button class="btn-glow" id="nav-btn" onclick="handleNavClick()">
@@ -104,6 +108,18 @@
         </div>
     </div>
 
+    <!-- DOWNLOAD -->
+    <div id="download-page" class="page">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-label">FILE SAYA</span>
+                <h2 class="section-title">Download <span class="text-gradient">File</span></h2>
+                <p class="section-sub">File hanya terbuka setelah pembayaran dikonfirmasi admin (status Sukses).</p>
+            </div>
+            <div id="user-download-body"></div>
+        </div>
+    </div>
+
     <!-- AUTH -->
     <div id="auth-page" class="page">
         <div class="auth-card">
@@ -159,8 +175,8 @@
         </div>
     </footer>
 
-    <script src="shared-db.js?v=6"></script>
-    <script src="script.js?v=6"></script>
+    <script src="shared-db.js?v=7"></script>
+    <script src="script.js?v=7"></script>
     <script>
         // Hapus badge "Powered by Netlify" yang disisipkan otomatis di level edge
         (function() {

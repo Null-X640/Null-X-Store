@@ -186,6 +186,7 @@ function showConfirm(title, message, onConfirm, type = 'warning') { showModal({ 
 
 // ==================== NAVIGASI ====================
 function showPage(pageId) {
+    toggleUserNav(false);
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById(pageId + '-page').classList.add('active');
     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
@@ -204,7 +205,29 @@ function showPage(pageId) {
         if (!currentUser) { showAlert('Akses Ditolak', 'Login dulu untuk akses Transaksi.', 'warning'); showPage('auth'); return; }
         renderTransaksiUser();
     }
+    if (pageId === 'download') {
+        if (!currentUser) { showAlert('Akses Ditolak', 'Login dulu untuk akses Download.', 'warning'); showPage('auth'); return; }
+        renderDownloadUser();
+    }
 }
+
+// Hamburger HP: buka/tutup menu navigasi user.
+function toggleUserNav(force) {
+    const nav = document.getElementById('nav-links');
+    if (!nav) return;
+    const open = force !== undefined ? !!force : !nav.classList.contains('open');
+    nav.classList.toggle('open', open);
+    const btn = document.querySelector('.nav-toggle');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+
+document.addEventListener('click', (e) => {
+    const nav = document.getElementById('nav-links');
+    if (!nav || !nav.classList.contains('open')) return;
+    if (nav.contains(e.target)) return;
+    if (e.target && e.target.closest && e.target.closest('.nav-toggle')) return;
+    toggleUserNav(false);
+});
 
 function handleNavClick() {
     if (currentUser) {
@@ -234,7 +257,8 @@ function renderHome() {
     if (currentUser) {
         locked.style.display = 'none';
         unlocked.style.display = 'block';
-        navLinks.style.display = 'flex';
+        // HP: biarkan CSS yang atur (dropdown hamburger), jangan paksa inline flex.
+        navLinks.style.display = window.innerWidth <= 900 ? '' : 'flex';
         document.getElementById('hero-username').innerText = currentUser.username.toUpperCase();
         document.getElementById('hero-name').innerText = currentUser.username;
         renderProduk();
@@ -801,6 +825,57 @@ function renderFAQ() {
     container.innerHTML = faq.map(f => `<div class="faq-item"><h4>${f.tanya}</h4><p>${f.jawab}</p></div>`).join('');
 }
 
+// ==================== DOWNLOAD (FILE SAYA) ====================
+// File hanya boleh didownload kalau transaksi sudah dikonfirmasi admin (Sukses).
+// Link file diset admin per paket (EXTERNAL beda dengan INTERNAL).
+function escHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function paketDl(namaPaket) {
+    const p = paket.find(x => x.nama === namaPaket);
+    const dl = (p && p.dl) || { url: '', label: '' };
+    return { url: dl.url || '', label: dl.label || '' };
+}
+
+function renderDownloadUser() {
+    const box = document.getElementById('user-download-body');
+    if (!box) return;
+    const userTrx = transaksi.filter(t => t.email === currentUser?.email).slice().reverse();
+    if (userTrx.length === 0) {
+        box.innerHTML = '<div class="table-empty">Belum ada pembelian. Pilih paket di halaman Produk, bayar, lalu tunggu konfirmasi admin.</div>';
+        return;
+    }
+    box.innerHTML = userTrx.map(t => {
+        const dl = paketDl(t.paket);
+        const head = `<div class="dl-head"><strong>${escHtml(t.paket)} — ${escHtml(t.tier)}</strong><small>${escHtml(t.id)} · ${escHtml(t.tanggal)}</small></div>`;
+        if (t.status === 'Sukses' && dl.url) {
+            return `<div class="dl-card dl-ready">${head}
+                <div class="dl-body"><span class="dl-file">${escHtml(dl.label || 'File download')}</span>
+                <a class="btn-glow dl-btn" href="${escHtml(dl.url)}" target="_blank" rel="noopener">Download</a></div>
+            </div>`;
+        }
+        if (t.status === 'Sukses') {
+            return `<div class="dl-card dl-wait">${head}
+                <div class="dl-body"><span>Pembayaran sudah dikonfirmasi, tapi file belum diupload admin. Hubungi admin.</span></div>
+            </div>`;
+        }
+        if (t.status === 'Pending') {
+            return `<div class="dl-card dl-wait">${head}
+                <div class="dl-body"><span>Menunggu pembayaran & konfirmasi admin. File terbuka setelah status jadi Sukses.</span></div>
+            </div>`;
+        }
+        return `<div class="dl-card dl-off">${head}
+            <div class="dl-body"><span>Transaksi ${escHtml(t.status)}. File tidak tersedia.</span></div>
+        </div>`;
+    }).join('');
+}
+
 // ==================== TRANSAKSI ====================
 function renderTransaksiUser() {
     cekExpired();
@@ -825,7 +900,7 @@ function renderTransaksiUser() {
             <td>${t.tier || t.durasi}</td>
             <td>Rp ${t.total.toLocaleString('id-ID')}</td>
             <td>${t.tanggal}</td>
-            <td><div class="trx-status-cell">${badge}${bisaBayar ? `<button class="trx-bayar-btn" onclick='showPaymentPopup(${JSON.stringify(t.id)})'>Bayar</button>` : ''}</div></td>
+            <td><div class="trx-status-cell">${badge}${bisaBayar ? `<button class="trx-bayar-btn" onclick='showPaymentPopup(${JSON.stringify(t.id)})'>Bayar</button>` : ''}${t.status === 'Sukses' ? `<button class="trx-bayar-btn" onclick="showPage('download')">Download</button>` : ''}</div></td>
         </tr>`;
     }).join('');
     startTrxTimer();

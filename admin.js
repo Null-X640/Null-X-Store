@@ -595,6 +595,16 @@ function openPaketForm(id) {
                 </div>
             </div>
 
+            <div class="order-field">
+                <label>Link File Download (opsional, khusus paket ini)</label>
+                <input type="text" id="fp-dlurl" value="${esc(p && p.dl ? p.dl.url : '')}" placeholder="https://drive.google.com/... (link file .exe user)" maxlength="500" autocomplete="off" oninput="clearFormError()">
+            </div>
+            <div class="order-field">
+                <label>Nama File / Versi (opsional)</label>
+                <input type="text" id="fp-dllabel" value="${esc(p && p.dl ? p.dl.label : '')}" placeholder="EXTERNAL v2.3 (.exe)" maxlength="80" oninput="clearFormError()">
+            </div>
+            <div class="field-hint">Upload file .exe ke Google Drive / MediaFire / GitHub Releases dulu, lalu tempel linknya di sini. Link ini KHUSUS paket ini (External beda dengan Internal) dan baru bisa didownload user setelah admin konfirmasi <b>Sukses</b>.</div>
+
             <div class="tier-editor">
                 <div class="tier-editor-head">
                     <span>Tier Harga <em id="tier-count">0</em></span>
@@ -607,17 +617,22 @@ function openPaketForm(id) {
             const nama = val('fp-nama');
             const desc = val('fp-desc');
             const tiers = collectTiers();
+            const dlUrl = val('fp-dlurl');
+            const dlLabel = val('fp-dllabel');
 
             if (!nama) return formError('Nama paket wajib diisi.');
             if (!desc) return formError('Deskripsi paket wajib diisi.');
             if (paket.some(x => x.nama.toLowerCase() === nama.toLowerCase() && x.id !== (p ? p.id : -1)))
                 return formError('Sudah ada paket bernama "' + nama + '".');
             if (!tiers.length) return formError('Minimal 1 tier yang punya label + harga di atas 0.');
+            if (dlUrl && !/^https?:\/\/.+/i.test(dlUrl))
+                return formError('Link file harus diawali http:// atau https://.');
 
             if (isEdit) {
                 p.nama = nama; p.desc = desc; p.tiers = tiers;
+                p.dl = { url: dlUrl, label: dlLabel };
             } else {
-                paket.push({ id: Date.now(), nama, desc, tiers });
+                paket.push({ id: Date.now(), nama, desc, tiers, dl: { url: dlUrl, label: dlLabel } });
             }
             saveAdminData();
             renderAdminProduk();
@@ -666,7 +681,11 @@ function renderAdminProduk() {
         const termurah = p.tiers.reduce((a, b) => (!a || b.harga < a.harga) ? b : a, null);
         return `
         <tr>
-            <td><strong>${esc(p.nama)}</strong></td>
+            <td><strong>${esc(p.nama)}</strong>
+                ${(p.dl && p.dl.url)
+                    ? `<div class="dl-flag dl-ok" title="${esc(p.dl.url)}">File: ${esc(p.dl.label || 'terpasang')}</div>`
+                    : `<div class="dl-flag dl-none">Belum ada file</div>`}
+            </td>
             <td class="cell-desc">${esc(p.desc)}</td>
             <td>
                 <div class="tier-cell">

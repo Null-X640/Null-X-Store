@@ -1324,6 +1324,34 @@ td.cell-price {
 }
 .cell-sub { font-size: 0.7rem; color: var(--text-dim); }
 .table-empty { text-align: center; color: var(--text-muted); padding: 2.5rem 1rem; font-size: 0.85rem; }
+
+/* Penanda file download per paket (kolom Nama, tabel admin) */
+.dl-flag { font-size: 0.68rem; margin-top: 0.3rem; font-weight: 500; }
+.dl-flag.dl-ok { color: #6ee7b7; }
+.dl-flag.dl-none { color: var(--text-dim); }
+
+/* Kartu download user (halaman Download) */
+.dl-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.85rem;
+    border-left: 3px solid var(--border-hover);
+}
+.dl-card.dl-ready { border-left-color: #22c55e; }
+.dl-card.dl-wait { border-left-color: var(--warning, #f59e0b); }
+.dl-card.dl-off { border-left-color: var(--border-hover); opacity: 0.75; }
+.dl-head { display: flex; flex-direction: column; gap: 0.15rem; margin-bottom: 0.7rem; }
+.dl-head strong { font-size: 0.92rem; }
+.dl-head small { color: var(--text-dim); font-size: 0.72rem; }
+.dl-body { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--text-muted); }
+.dl-file { color: var(--primary-soft); font-weight: 600; }
+.dl-btn { text-decoration: none; }
+@media (max-width: 480px) {
+    .dl-body { flex-direction: column; align-items: stretch; }
+    .dl-btn { width: 100%; }
+}
 .kode-chip {
     display: inline-block;
     font-family: 'Space Grotesk', monospace;
